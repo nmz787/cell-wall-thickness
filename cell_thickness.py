@@ -1,5 +1,6 @@
 import cv2
 import os
+import sys
 import numpy as np
 
 class getThickness(object):
@@ -51,6 +52,9 @@ class getThickness(object):
 
 
 if __name__ == '__main__':
-    img_path = sys.argv[1]
-    gt = getThickness(img_path)
-    gt.adaptive_threshold()
+    if not len(sys.argv)>1:
+        print 'usage: python cell_thickness.py <image path>'
+    else:    
+        img_path = sys.argv[1]
+        gt = getThickness(img_path)
+        gt.adaptive_threshold()
