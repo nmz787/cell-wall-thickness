@@ -100,6 +100,7 @@ class getThickness(object):
         # Otsu's thresholding after Gaussian filtering
         blur = cv2.GaussianBlur(img,(5,5),0)
         ret3,th3 = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+        print 'otsus dimensions: {}, dtype: {}'.format(th3.shape, th3.dtype)
         
         # plot all the images and their histograms
         images = [img, 0, th1,
@@ -176,7 +177,8 @@ class getThickness(object):
         self.seed_pt = None
         fixed_range = True
         connectivity = 4
-
+        self.flooded = img.copy()
+        
         def update(dummy=None):
             if self.seed_pt is None:
                 #print 'seed_pt is None!!'
@@ -186,7 +188,7 @@ class getThickness(object):
             elif self.seed_pt is False:
                 return
             #print 'seed_pt is: {}'.format(self.seed_pt)
-            self.flooded = img.copy()
+            
             mask[:] = 0
             lo = cv2.getTrackbarPos('lo', 'floodfill')
             hi = cv2.getTrackbarPos('hi', 'floodfill')
