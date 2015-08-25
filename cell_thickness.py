@@ -18,9 +18,25 @@ class getThickness(object):
         #return
 
         otsus = self.otsus_threshold(self.img)
-        otsus_flooded = self.floodfill(otsus)
+        cv2.imshow("otsus", otsus)
+        cv2.waitKey(0)
+
+        #otsus_flooded = self.floodfill(otsus)
+
         cv2.destroyAllWindows()
-        self.get_contours(otsus_flooded)
+        #self.get_contours(otsus_flooded)
+
+        kernel = np.ones((5,5),np.uint8)
+        # Opening is just another name of erosion followed by dilation. 
+        # It is useful in removing noise, as we explained above. 
+        # Here we use the function, cv2.morphologyEx()
+        opening = cv2.morphologyEx(otsus, cv2.MORPH_OPEN, kernel)
+        # Closing is reverse of Opening, Dilation followed by Erosion. 
+        # It is useful in closing small holes inside the foreground objects,
+        # or small black points on the object.
+        closing = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel)
+
+        self.get_contours(closing)
         # print self.img.shape, type(self.img)
         # get the image properties, using the default of 1 channel for 2-axis images
         height, width, channels = self.get_image_dimensions(self.img)
@@ -85,7 +101,7 @@ class getThickness(object):
         cv2.destroyAllWindows()
 
     def otsus_threshold(self, img):
-        from matplotlib import pyplot as plt
+        #from matplotlib import pyplot as plt
         
         #img = cv2.imread('noisy2.png',0)
         if self.get_image_dimensions(img)[2]>1:
@@ -110,14 +126,14 @@ class getThickness(object):
                   'Original Noisy Image','Histogram',"Otsu's Thresholding",
                   'Gaussian filtered Image','Histogram',"Otsu's Thresholding"]
         
-        for i in xrange(3):
-            plt.subplot(3,3,i*3+1),plt.imshow(images[i*3],'gray')
-            plt.title(titles[i*3]), plt.xticks([]), plt.yticks([])
-            plt.subplot(3,3,i*3+2),plt.hist(images[i*3].ravel(),256)
-            plt.title(titles[i*3+1]), plt.xticks([]), plt.yticks([])
-            plt.subplot(3,3,i*3+3),plt.imshow(images[i*3+2],'gray')
-            plt.title(titles[i*3+2]), plt.xticks([]), plt.yticks([])
-        plt.show()
+        #for i in xrange(3):
+        #    plt.subplot(3,3,i*3+1),plt.imshow(images[i*3],'gray')
+        #    plt.title(titles[i*3]), plt.xticks([]), plt.yticks([])
+        #    plt.subplot(3,3,i*3+2),plt.hist(images[i*3].ravel(),256)
+        #    plt.title(titles[i*3+1]), plt.xticks([]), plt.yticks([])
+        #    plt.subplot(3,3,i*3+3),plt.imshow(images[i*3+2],'gray')
+        #    plt.title(titles[i*3+2]), plt.xticks([]), plt.yticks([])
+        #plt.show()
         return th3
 
     def save_image(self, new_img_name='modified'):
