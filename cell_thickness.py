@@ -37,6 +37,7 @@ class getThickness(object):
         closing = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel)
 
         self.get_contours(closing)
+        self.process_contours(closing)
         # print self.img.shape, type(self.img)
         # get the image properties, using the default of 1 channel for 2-axis images
         height, width, channels = self.get_image_dimensions(self.img)
@@ -170,7 +171,8 @@ class getThickness(object):
         # findContours(image, mode, method[, contours[, hierarchy[, offset]]]) -> contours, hierarchy
         #self.contours, self.hierarchy = cv2.findContours(self.img)
         #self.contours, self.hierarchy = cv2.findContours(self.thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)#cv2.CHAIN_APPROX_SIMPLE)
-        imgret, contours0, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        imgret, contours0, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        self.contours = contours0
 
         c = max(contours0, key=cv2.contourArea)
  
@@ -250,11 +252,23 @@ class getThickness(object):
         return self.flooded
 
 
-    def process_contours(self):
+    def process_contours(self, img):
+        contour_distance_maps = []
         for contour in self.contours:
+            height, width, channels = self.get_image_dimensions(img)
+            dist_map = np.zeros((height, width, 3), np.uint8) #np.float64) #
             for point in contour:
-                self.img_blank[point] = self.WALL_EDGE_COLOR
-
+                # print [w for p in point for w in p]
+                # print point
+                # print point-2
+                # print type(point)
+                # print dir(point)
+                # print ''
+                # sys.exit()
+                dist_map[point[0][1]][point[0][0]] = (255, 255, 255)#self.WALL_EDGE_COLOR
+            contour_distance_maps.append(dist_map)
+            cv2.imshow('contour processed', dist_map)
+            cv2.waitKey(0)
 
 
 
